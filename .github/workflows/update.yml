@@ -2,29 +2,57 @@ name: 데이터 자동 갱신
 
 on:
   schedule:
-    - cron: '0 21 1 * *'
+    - cron: '0 21 1,15 * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
+
+concurrency:
+  group: kr-valuation-update
+  cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          persist-credentials: true
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - run: pip install requests
-      - name: 수집
+
+      - name: 데이터 수집
         env:
           ECOS_KEY: ${{ secrets.ECOS_KEY }}
         run: python fetch_data.py
-      - name: 저장
+        continue-on-error: true
+
+      - name: 하트비트 기록
         run: |
-          git config user.name  "github-actions"
-          git config user.email "actions@github.com"
-          git add data.json
-          git diff --staged --quiet || git commit -m "데이터 갱신"
+          mkdir -p .keepalive
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .keepalive/last-run.txt
+
+      - name: 커밋 및 푸시
+        run: |
+          git config user.name  "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add -A
+          git commit -m "자동 갱신 $(date -u +%Y-%m-%d)" || echo "변경 없음"
           git push
+
+      - name: 예약 실행 되살리기
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          for wf in update.yml keepalive.yml; do
+            gh api -X PUT \
+              "repos/${{ github.repository }}/actions/workflows/$wf/enable" \
+              && echo "$wf 활성" || echo "$wf 건너뜀"
+          done
