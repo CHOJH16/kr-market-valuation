@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>한국 증시 밸류에이션</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1><span class="flag">KR</span> <span id="title">한국 버핏지수</span></h1>
+    <p class="sub">최종 갱신 <span id="updated">–</span> · 출처 한국은행 ECOS</p>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="buffett" class="on">버핏지수</button>
+    <button data-tab="cape">CAPE (쉴러 PE)</button>
+  </nav>
+
+  <section class="kpis">
+    <div class="kpi"><div class="k">최신 기준월</div><div class="v" id="k-date">–</div></div>
+    <div class="kpi"><div class="k">현재 값</div><div class="v" id="k-now">–</div></div>
+    <div class="kpi"><div class="k">전월비</div><div class="v" id="k-chg">–</div></div>
+    <div class="kpi"><div class="k">국면 판정</div><div class="v" id="k-zone">–</div></div>
+  </section>
+
+  <div class="ranges">
+    <button data-y="3">3년</button>
+    <button data-y="5">5년</button>
+    <button data-y="10" class="on">10년</button>
+    <button data-y="0">전체</button>
+  </div>
+
+  <section class="panel">
+    <canvas id="main"></canvas>
+  </section>
+
+  <section class="panel">
+    <div class="cap">전월비 변화</div>
+    <canvas id="delta"></canvas>
+  </section>
+
+  <section class="note" id="note"></section>
+
+  <section class="note">
+    <b>읽는 법과 한계</b>
+    <p>버핏지수는 주식 시가총액을 명목 GDP(직전 4개 분기 합)로 나눈 값입니다. 100%를 넘으면 증시 규모가 경제 규모를 넘어섰다는 뜻으로 통상 고평가 신호로 해석합니다.</p>
+    <p>CAPE는 KOSPI 지수를 최근 10년간 물가로 조정한 평균 주당순이익으로 나눈 값입니다. 이 페이지의 CAPE는 지수와 시장 PER로 주당순이익을 역산해 <b>자체 산출</b>한 것이라, Siblis Research 등 상용 데이터와 수치가 다를 수 있습니다.</p>
+    <p>GDP는 발표에 1~2개월 시차가 있어 최근 구간 분모는 추정치입니다. CAPE는 계산에 10년치가 필요해 그래프 시작점이 원자료보다 10년 늦습니다.</p>
+    <p>정보 제공 목적이며 투자 권유가 아닙니다. 투자 판단과 결과에 대한 책임은 본인에게 있습니다.</p>
+  </section>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
