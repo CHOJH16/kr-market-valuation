@@ -7,7 +7,7 @@ import requests
 KEY  = os.environ.get("ECOS_KEY", "").strip()
 BASE = "https://ecos.bok.or.kr/api"
 KST  = timezone(timedelta(hours=9))
-INCLUDE_KOSDAQ = True
+INCLUDE_KOSDAQ = False
 
 if not KEY:
     sys.exit("ECOS_KEY 시크릿이 비어 있습니다.")
